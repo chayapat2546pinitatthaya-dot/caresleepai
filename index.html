@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Care Sleep AI - Your Personal Sleep Coach</title>
+    <meta name="description" content="AI-powered sleep and stress analysis to help you sleep better.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Ionicons for some icons -->
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-icon">
+                    <ion-icon name="moon"></ion-icon>
+                </div>
+                <span>CareSleep AI</span>
+            </div>
+            <ul class="nav-links">
+                <li class="active" data-page="dashboard">
+                    <ion-icon name="grid-outline"></ion-icon>
+                    <span data-i18n="nav_dashboard">Dashboard</span>
+                </li>
+                <li data-page="coach">
+                    <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                    <span data-i18n="nav_coach">AI Sleep Coach</span>
+                </li>
+                <li data-page="analysis">
+                    <ion-icon name="stats-chart-outline"></ion-icon>
+                    <span data-i18n="nav_analysis">Analysis</span>
+                </li>
+                <li data-page="history">
+                    <ion-icon name="time-outline"></ion-icon>
+                    <span data-i18n="nav_history">History</span>
+                </li>
+            </ul>
+            <div class="user-profile">
+                <div class="avatar" id="user-avatar">
+                    <img src="images/image.png" alt="Thanaphong">
+                </div>
+                <div class="user-info">
+                    <p class="name">Thanaphong</p>
+                    <p class="status" data-i18n="user_status">Pro Account</p>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <header class="top-header">
+                <h1 id="page-title" data-i18n="nav_dashboard">Dashboard</h1>
+                <div class="header-actions">
+                    <div class="lang-switch glass">
+                        <button id="lang-th" class="lang-btn active">TH</button>
+                        <span class="divider"></span>
+                        <button id="lang-en" class="lang-btn">EN</button>
+                    </div>
+                    <button class="btn-sync">
+                        <ion-icon name="sync-outline"></ion-icon>
+                        <span data-i18n="sync_btn">Sync Watch</span>
+                    </button>
+                    <div class="notification-bell">
+                        <ion-icon name="notifications-outline"></ion-icon>
+                        <span class="badge"></span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="page-section active">
+                <div class="hero-card">
+                    <div class="hero-text">
+                        <h2 data-i18n="hero_title">Good morning, Chayapat!</h2>
+                        <p data-i18n="hero_desc">Your sleep quality was <span class="highlight">84%</span> last night.
+                            You're recovered and ready to go.</p>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="sleep-score-circle">
+                            <svg viewBox="0 0 36 36" class="circular-chart">
+                                <path class="circle-bg"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                <path class="circle" stroke-dasharray="84, 100"
+                                    d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                            </svg>
+                            <div class="percentage">84</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card glass shadow-glow">
+                        <div class="stat-header">
+                            <ion-icon name="time" class="indigo"></ion-icon>
+                            <span data-i18n="stat_duration">Sleep Duration</span>
+                        </div>
+                        <div class="stat-value">7h 24m</div>
+                        <div class="stat-meta success" data-i18n="stat_duration_meta">+42m from yesterday</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-header">
+                            <ion-icon name="heart" class="rose"></ion-icon>
+                            <span data-i18n="stat_hr">Avg Heart Rate</span>
+                        </div>
+                        <div class="stat-value">58 BPM</div>
+                        <div class="stat-meta" data-i18n="stat_hr_meta">Normal Range</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-header">
+                            <ion-icon name="flash" class="amber"></ion-icon>
+                            <span data-i18n="stat_stress">Stress Level</span>
+                        </div>
+                        <div class="stat-value">22%</div>
+                        <div class="stat-meta success" data-i18n="stat_stress_meta">Low Stress</div>
+                    </div>
+                    <div class="stat-card glass">
+                        <div class="stat-header">
+                            <ion-icon name="moon" class="violet"></ion-icon>
+                            <span data-i18n="stat_deep">Deep Sleep</span>
+                        </div>
+                        <div class="stat-value">1h 45m</div>
+                        <div class="stat-meta" data-i18n="stat_deep_meta">Good Quality</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-bottom-grid">
+                    <div class="chart-container glass">
+                        <h3 data-i18n="chart_title">Sleep Activity (Weekly)</h3>
+                        <div class="mock-chart" id="sleep-chart">
+                            <!-- Bars will be generated by script -->
+                        </div>
+                    </div>
+                    <div class="tips-container glass">
+                        <h3 data-i18n="insights_title">AI Insights</h3>
+                        <ul class="insight-list">
+                            <li>
+                                <div class="insight-icon"><ion-icon name="cafe-outline"></ion-icon></div>
+                                <div class="insight-content">
+                                    <p class="insight-title" data-i18n="insight_1_title">Late Caffeine</p>
+                                    <p class="insight-desc" data-i18n="insight_1_desc">You had coffee at 4 PM. This
+                                        might delay your deep sleep starts.</p>
+                                </div>
+                            </li>
+                            <li>
+                                <div class="insight-icon"><ion-icon name="phone-portrait-outline"></ion-icon></div>
+                                <div class="insight-content">
+                                    <p class="insight-title" data-i18n="insight_2_title">Screen Time</p>
+                                    <p class="insight-desc" data-i18n="insight_2_desc">High blue light exposure detected
+                                        30 mins before bed.</p>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Coach Section -->
+            <section id="coach" class="page-section">
+                <div class="chat-container glass">
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="message bot">
+                            <div class="bot-avatar-msg">
+                                <img src="logo.png" alt="CareSleep">
+                            </div>
+                            <div class="message-bubble" data-i18n="chat_greeting">
+                                Hello Chayapat! I'm Luna, your AI Sleep Coach. How did you feel when you woke up today?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="chat-input" placeholder="Type your message here..."
+                            data-placeholder="chat_placeholder">
+                        <button id="send-btn">
+                            <ion-icon name="paper-plane"></ion-icon>
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analysis Section -->
+            <section id="analysis" class="page-section">
+                <div class="analysis-grid">
+                    <div class="analysis-card glass wide">
+                        <h3 data-i18n="analysis_title">Detailed Stress & Recovery</h3>
+                        <p class="subtitle" data-i18n="analysis_subtitle">AI Correlation Analysis based on your
+                            lifestyle patterns.</p>
+                        <div class="correlation-stats">
+                            <div class="corr-item">
+                                <span class="label" data-i18n="corr_caffeine">Caffeine Impact</span>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 75%;"></div>
+                                </div>
+                                <span class="value" data-i18n="val_high">High (75%)</span>
+                            </div>
+                            <div class="corr-item">
+                                <span class="label" data-i18n="corr_exercise">Exercise Benefit</span>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 90%;"></div>
+                                </div>
+                                <span class="value" data-i18n="val_very_high">Very High (90%)</span>
+                            </div>
+                            <div class="corr-item">
+                                <span class="label" data-i18n="corr_phone">Phone Usage Before Bed</span>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width: 85%;"></div>
+                                </div>
+                                <span class="value" data-i18n="val_negative">Negative Impact (85%)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="analysis-card glass">
+                        <h3 data-i18n="stage_title">Sleep Stage Analysis</h3>
+                        <div class="pie-chart-mock">
+                            <div class="pie-slice deep" style="--p:25;--c:#6366f1"></div>
+                            <div class="pie-slice light" style="--p:50;--c:#818cf8"></div>
+                            <div class="pie-slice rem" style="--p:20;--c:#a5b4fc"></div>
+                            <div class="pie-slice awake" style="--p:5;--c:#e0e7ff"></div>
+                        </div>
+                        <ul class="pie-legend">
+                            <li><span class="dot deep"></span> <span data-i18n="legend_deep">Deep</span> (25%)</li>
+                            <li><span class="dot light"></span> <span data-i18n="legend_light">Light</span> (50%)</li>
+                            <li><span class="dot rem"></span> <span data-i18n="legend_rem">REM</span> (20%)</li>
+                            <li><span class="dot awake"></span> <span data-i18n="legend_awake">Awake</span> (5%)</li>
+                        </ul>
+                    </div>
+
+                    <div class="analysis-card glass">
+                        <h3 data-i18n="risk_title">Risk Assessment</h3>
+                        <div class="risk-gauge">
+                            <div class="gauge-center">
+                                <span class="risk-label" data-i18n="risk_label">Insomnia Risk</span>
+                                <span class="risk-value low" data-i18n="risk_low">LOW</span>
+                            </div>
+                        </div>
+                        <p class="risk-desc" data-i18n="risk_desc">Based on your trends, you are maintaining a healthy
+                            circadian rhythm.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Section -->
+            <section id="history" class="page-section">
+                <div class="history-controls">
+                    <div class="search-box glass">
+                        <ion-icon name="search-outline"></ion-icon>
+                        <input type="text" placeholder="Search past nights..." data-placeholder="history_search">
+                    </div>
+                    <div class="filter-actions">
+                        <button class="btn-filter glass" data-i18n="filter_30">Last 30 Days</button>
+                        <button class="btn-filter glass" data-i18n="filter_month">This Month</button>
+                    </div>
+                </div>
+
+                <div class="history-list glass">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th data-i18n="th_date">Date</th>
+                                <th data-i18n="th_duration">Duration</th>
+                                <th data-i18n="th_score">Score</th>
+                                <th data-i18n="th_stress">Stress</th>
+                                <th data-i18n="th_status">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body">
+                            <!-- Rows will be generated -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
