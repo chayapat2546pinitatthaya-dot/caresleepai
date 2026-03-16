@@ -1,383 +1,1203 @@
-const GEMINI_API_KEY = 'AIzaSyCwDYmtWRYVfvjOL5EW2GaZCP0CgnNhD1k';
+:root {
+    --bg-dark: #06111d;
+    --sidebar-bg: #0f1a2b;
+    --accent-indigo: #6366f1;
+    --accent-indigo-glow: rgba(99, 102, 241, 0.5);
+    --accent-violet: #8b5cf6;
+    --accent-rose: #f43f5e;
+    --accent-amber: #f59e0b;
+    --accent-emerald: #10b981;
+    --accent-cyan: #06b6d4;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --glass-bg: rgba(15, 26, 43, 0.7);
+    --glass-border: rgba(148, 163, 184, 0.15);
+    --sidebar-width: 280px;
+    --header-height: 80px;
+    --transition-speed: 0.4s;
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Translation Data
-    const translations = {
-        en: {
-            nav_dashboard: "Dashboard",
-            nav_coach: "AI Sleep Coach",
-            nav_analysis: "Analysis",
-            nav_history: "History",
-            user_status: "Pro Account",
-            sync_btn: "Sync Watch",
-            hero_title: "Good morning, Thanaphong!",
-            hero_desc: "Your sleep quality was <span class='highlight'>84%</span> last night. You're recovered and ready to go.",
-            stat_duration: "Sleep Duration",
-            stat_duration_meta: "+42m from yesterday",
-            stat_hr: "Avg Heart Rate",
-            stat_hr_meta: "Normal Range",
-            stat_stress: "Stress Level",
-            stat_stress_meta: "Low Stress",
-            stat_deep: "Deep Sleep",
-            stat_deep_meta: "Good Quality",
-            chart_title: "Sleep Activity (Weekly)",
-            insights_title: "AI Insights",
-            insight_1_title: "Late Caffeine",
-            insight_1_desc: "You had coffee at 4 PM. This might delay your deep sleep starts.",
-            insight_2_title: "Screen Time",
-            insight_2_desc: "High blue light exposure detected 30 mins before bed.",
-            chat_placeholder: "Type your message here...",
-            analysis_title: "Detailed Stress & Recovery",
-            analysis_subtitle: "AI Correlation Analysis based on your lifestyle patterns.",
-            corr_caffeine: "Caffeine Impact",
-            corr_exercise: "Exercise Benefit",
-            corr_phone: "Phone Usage Before Bed",
-            val_high: "High (75%)",
-            val_very_high: "Very High (90%)",
-            val_negative: "Negative Impact (85%)",
-            stage_title: "Sleep Stage Analysis",
-            legend_deep: "Deep",
-            legend_light: "Light",
-            legend_rem: "REM",
-            legend_awake: "Awake",
-            risk_title: "Risk Assessment",
-            risk_label: "Insomnia Risk",
-            risk_low: "LOW",
-            risk_desc: "Based on your trends, you are maintaining a healthy circadian rhythm.",
-            history_search: "Search past nights...",
-            filter_30: "Last 30 Days",
-            filter_month: "This Month",
-            th_date: "Date",
-            th_duration: "Duration",
-            th_score: "Score",
-            th_stress: "Stress",
-            th_status: "Status",
-            chat_greeting: "Hello Thanaphong! I'm Luna, your AI Sleep Coach. How did you feel when you woke up today?",
-            bot_responses: [
-                "That's interesting. Your data shows a correlation between late-night blue light and reduced REM sleep.",
-                "Based on your profile, I recommend avoiding caffeine after 2 PM today to improve tonight's sleep score.",
-                "Your heart rate variability (HRV) was slightly lower than usual. You may want to consider a light evening meditation.",
-                "Good effort on your 7-hour sleep streak! Your recovery is at 84%.",
-                "I noticed you've been using your phone 30 minutes before bed. This can suppress melatonin by up to 22%."
-            ],
-            advice_stress: "I see you're feeling stressed. To calm your mind before bed, try the 4-7-8 breathing technique: Inhale for 4s, hold for 7s, exhale for 8s. This signals your nervous system to relax.",
-            advice_work: "Thinking about work can keep your brain in 'active mode'. Try a 'Brain Dump': Write down everything you're worried about for tomorrow on paper. This helps your brain give permission to stop processing them for tonight.",
-            advice_insomnia: "If you can't fall asleep within 20 minutes, get out of bed. Go to another room, do something relaxing in dim light (like reading a paper book), and only return to bed when you feel sleepy. This prevents your brain from associating your bed with being awake and frustrated."
-        },
-        th: {
-            nav_dashboard: "หน้าหลัก",
-            nav_coach: "โค้ช AI ส่วนตัว",
-            nav_analysis: "การวิเคราะห์",
-            nav_history: "ประวัติ",
-            user_status: "บัญชีโปร",
-            sync_btn: "ซิงค์นาฬิกา",
-            hero_title: "สวัสดีตอนเช้า, คุณธนพงศ์!",
-            hero_desc: "คุณภาพการนอนของคุณเมื่อคืนคือ <span class='highlight'>84%</span> คุณฟื้นฟูร่างกายได้ดีและพร้อมสำหรับวันใหม่",
-            stat_duration: "ระยะเวลาการนอน",
-            stat_duration_meta: "+42 นาที จากเมื่อวาน",
-            stat_hr: "อัตราการเต้นหัวใจเฉลี่ย",
-            stat_hr_meta: "อยู่ในเกณฑ์ปกติ",
-            stat_stress: "ระดับความเครียด",
-            stat_stress_meta: "ความเครียดต่ำ",
-            stat_deep: "หลับลึก",
-            stat_deep_meta: "คุณภาพดี",
-            chart_title: "กิจกรรมการนอน (รายสัปดาห์)",
-            insights_title: "ข้อมูลจาก AI",
-            insight_1_title: "คาเฟอีนช่วงเย็น",
-            insight_1_desc: "คุณดื่มกาแฟตอน 16:00 น. ซึ่งอาจทำให้การหลับลึกเริ่มช้าลง",
-            insight_2_title: "การใช้หน้าจอ",
-            insight_2_desc: "ตรวจพบการใช้แสงสีน้ำเงินสูง 30 นาทีก่อนนอน",
-            chat_placeholder: "พิมพ์ข้อความที่นี่...",
-            analysis_title: "รายละเอียดความเครียดและการฟื้นฟู",
-            analysis_subtitle: "การวิเคราะห์ความสัมพันธ์โดย AI ตามพฤติกรรมของคุณ",
-            corr_caffeine: "ผลกระทบจากคาเฟอีน",
-            corr_exercise: "ประโยชน์จากการออกกำลังกาย",
-            corr_phone: "การใช้มือถือก่อนนอน",
-            val_high: "สูง (75%)",
-            val_very_high: "สูงมาก (90%)",
-            val_negative: "ผลกระทบเชิงลบ (85%)",
-            stage_title: "วิเคราะห์ระยะการนอน",
-            legend_deep: "หลับลึก",
-            legend_light: "หลับตื้น",
-            legend_rem: "หลับฝัน (REM)",
-            legend_awake: "ตื่น",
-            risk_title: "การประเมินความเสี่ยง",
-            risk_label: "ความเสี่ยงนอนไม่หลับ",
-            risk_low: "ต่ำ",
-            risk_desc: "จากแนวโน้มของคุณ คุณกำลังรักษาวงจรการนอนที่ดี",
-            history_search: "ค้นหาประวัติการนอน...",
-            filter_30: "30 วันที่ผ่านมา",
-            filter_month: "เดือนนี้",
-            th_date: "วันที่",
-            th_duration: "ระยะเวลา",
-            th_score: "คะแนน",
-            th_stress: "เครียด",
-            th_status: "สถานะ",
-            chat_greeting: "สวัสดีค่ะคุณธนพงศ์! ลูน่าคือโค้ช AI ส่วนตัวของคุณ วันนี้หลังตื่นนอนคุณรู้สึกเป็นอย่างไรบ้างคะ?",
-            bot_responses: [
-                "น่าสนใจมากค่ะ ข้อมูลของคุณแสดงความสัมพันธ์ระหว่างแสงสีน้ำเงินช่วงดึกกับการนอนหลับช่วง REM ที่ลดลง",
-                "จากโปรไฟล์ของคุณ แนะนำให้งดคาเฟอีนหลังบ่าย 2 โมงในวันนี้ เพื่อคะแนนการนอนที่ดีขึ้นในคืนนี้ค่ะ",
-                "ค่า HRV ของคุณต่ำกว่าปกติเล็กน้อย ลองหาเวลาทำสมาธิสั้นๆ ในช่วงเย็นดูนะคะ",
-                "ทำได้ดีมากค่ะที่นอนติดต่อกันได้ 7 ชั่วโมง การฟื้นฟูร่างกายของคุณอยู่ที่ 84%",
-                "ตรวจพบว่าคุณใช้มือถือก่อนนอน 30 นาที ซึ่งอาจยับยั้งเมลาโทนินลงได้ถึง 22% ค่ะ"
-            ],
-            advice_stress: "เข้าใจเลยค่ะว่าความเครียดส่งผลต่อการนอน ลองใช้เทคนิคการหายใจแบบ 4-7-8 ดูนะคะ: หายใจเข้า 4 วินาที, กลั้นหายใจ 7 วินาที, และผ่อนลมหายใจออก 8 วินาที วิธีนี้จะช่วยส่งสัญญาณให้ระบบประสาทของคุณผ่อนคลายลงค่ะ",
-            advice_work: "การคิดเรื่องงานทำให้สมองตื่นตัวตลอดเวลา แนะนำให้ทำ 'Brain Dump' ค่ะ ลองจดทุกอย่างที่กังวลหรือต้องทำในวันพรุ่งนี้ลงในกระดาษ วิธีนี้จะช่วยให้สมองรู้สึกว่า 'ฝากงานไว้ในกระดาษแล้ว' และยอมให้ตัวเองพักผ่อนได้ในคืนนี้ค่ะ",
-            advice_insomnia: "หากนอนไม่หลับเกิน 20 นาที แนะนำให้ลุกออกจากเตียงก่อนค่ะ ไปทำกิจกรรมเบาๆ ในที่แสงสลัว เช่น อ่านหนังสือเล่ม (ไม่ใช่หน้าจอ) แล้วค่อยกลับมานอนเมื่อรู้สึกง่วงจริงๆ เพื่อไม่ให้สมองจำสลับกันว่าเตียงคือที่สำหรับความตื่นตัวและหงุดหงิดค่ะ"
-        }
-    };
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-    let currentLang = 'th';
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
 
-    function switchLanguage(lang) {
-        currentLang = lang;
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
 
-        // Update Class
-        document.getElementById('lang-th').classList.toggle('active', lang === 'th');
-        document.getElementById('lang-en').classList.toggle('active', lang === 'en');
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
 
-        // Update Text Content
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (translations[lang][key]) {
-                el.innerHTML = translations[lang][key];
-            }
-        });
+::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.3);
+    border-radius: 10px;
+}
 
-        // Update Placeholders
-        document.querySelectorAll('[data-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-placeholder');
-            if (translations[lang][key]) {
-                el.placeholder = translations[lang][key];
-            }
-        });
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(99, 102, 241, 0.5);
+}
 
-        // Update Title according to active page
-        const activeNav = document.querySelector('.nav-links li.active span');
-        if (activeNav) {
-            document.getElementById('page-title').textContent = activeNav.textContent;
-        }
+h1,
+h2,
+h3,
+.logo span {
+    font-family: 'Outfit', sans-serif;
+}
+
+.app-container {
+    display: flex;
+    min-height: 100vh;
+    animation: appInit 0.8s ease-out;
+}
+
+@keyframes appInit {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Sidebar Styling */
+.sidebar {
+    width: var(--sidebar-width);
+    background-color: var(--sidebar-bg);
+    border-right: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    position: fixed;
+    height: 100vh;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 3.5rem;
+    transition: all 0.3s;
+}
+
+.logo:hover {
+    transform: translateY(-2px);
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px rgba(99, 102, 241, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-icon:hover {
+    transform: scale(1.08) rotate(2deg);
+    box-shadow: 0 12px 48px rgba(99, 102, 241, 0.6);
+}
+
+.logo-icon ion-icon {
+    font-size: 1.5rem;
+    color: white;
+}
+
+.logo span {
+    font-size: 1.25rem;
+    font-weight: 700;
+    background: linear-gradient(to right, #fff, #94a3b8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    list-style: none;
+    flex-grow: 1;
+}
+
+.nav-links li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.9rem 1.1rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: 14px;
+    transition: all var(--transition-speed) cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 0.6rem;
+    position: relative;
+}
+
+.nav-links li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background: var(--accent-indigo);
+    border-radius: 0 10px 10px 0;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.nav-links li:hover {
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--accent-indigo);
+    transform: translateX(4px);
+}
+
+.nav-links li.active,
+.nav-links li.active:hover {
+    background-color: rgba(99, 102, 241, 0.15);
+    color: var(--accent-indigo);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.2);
+}
+
+.nav-links li.active::before {
+    opacity: 1;
+}
+
+.nav-links li ion-icon {
+    font-size: 1.4rem;
+}
+
+.user-profile {
+    margin-top: auto;
+    padding-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--accent-indigo);
+}
+
+.avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.user-info .name {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.user-info .status {
+    font-size: 0.75rem;
+    color: var(--accent-indigo);
+}
+
+/* Main Content Styling */
+.content {
+    margin-left: var(--sidebar-width);
+    flex-grow: 1;
+    padding: 2.5rem 3.5rem;
+    background: linear-gradient(135deg, 
+        rgba(6, 17, 29, 0.5),
+        rgba(15, 26, 43, 0.3)),
+        radial-gradient(circle at top right, rgba(99, 102, 241, 0.1), transparent 50%),
+        radial-gradient(circle at bottom left, rgba(139, 92, 246, 0.08), transparent 50%);
+    min-height: 100vh;
+}
+
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    height: 50px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.top-header h1 {
+    font-size: 2.2rem;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.btn-sync {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: white;
+    padding: 0.7rem 1.4rem;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+}
+
+.btn-sync:hover {
+    background: var(--accent-indigo);
+    border-color: var(--accent-indigo);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+}
+
+.notification-bell {
+    position: relative;
+    font-size: 1.6rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.notification-bell:hover {
+    color: var(--accent-rose);
+    transform: scale(1.1);
+}
+
+.badge {
+    position: absolute;
+    top: 0px;
+    right: -4px;
+    width: 10px;
+    height: 10px;
+    background-color: var(--accent-rose);
+    border-radius: 50%;
+    border: 2px solid var(--bg-dark);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(244, 63, 94, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 6px rgba(244, 63, 94, 0.2);
+    }
+}
+
+/* Language Switcher */
+.lang-switch {
+    display: flex;
+    align-items: center;
+    padding: 4px;
+    border-radius: 14px;
+    gap: 2px;
+    height: 42px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+}
+
+.lang-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lang-btn:hover {
+    color: var(--accent-indigo);
+}
+
+.lang-btn.active {
+    background: var(--accent-indigo);
+    color: white;
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.lang-switch .divider {
+    width: 1px;
+    height: 18px;
+    background: var(--glass-border);
+}
+
+/* Page Sections */
+.page-section {
+    display: none;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.page-section.active {
+    display: block;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
     }
 
-    document.getElementById('lang-th').addEventListener('click', () => switchLanguage('th'));
-    document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
-
-    // Initialize in Thai
-    switchLanguage('th');
-
-    // Navigation Logic
-    const navLinks = document.querySelectorAll('.nav-links li');
-    const sections = document.querySelectorAll('.page-section');
-    const pageTitle = document.getElementById('page-title');
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            const page = link.getAttribute('data-page');
-
-            // Update Active Link
-            navLinks.forEach(l => l.classList.remove('active'));
-            link.classList.add('active');
-
-            // Show Section with smooth transition
-            sections.forEach(sec => {
-                sec.classList.remove('active');
-                if (sec.id === page) {
-                    sec.classList.add('active');
-                }
-            });
-
-            // Update Title with animation
-            pageTitle.style.opacity = '0';
-            setTimeout(() => {
-                pageTitle.textContent = link.querySelector('span').textContent;
-                pageTitle.style.transition = 'all 0.4s ease';
-                pageTitle.style.opacity = '1';
-            }, 150);
-        });
-    });
-
-    // Mock Weekly Sleep Chart
-    const sleepChart = document.getElementById('sleep-chart');
-    const weeklyData = [
-        { day: 'Mon', hours: 7.5 },
-        { day: 'Tue', hours: 6.8 },
-        { day: 'Wed', hours: 8.2 },
-        { day: 'Thu', hours: 7.1 },
-        { day: 'Fri', hours: 6.5 },
-        { day: 'Sat', hours: 8.5 },
-        { day: 'Sun', hours: 7.9 },
-    ];
-
-    if (sleepChart) {
-        weeklyData.forEach((data, index) => {
-            const bar = document.createElement('div');
-            bar.className = 'chart-bar';
-            bar.style.height = `${(data.hours / 10) * 100}%`;
-            bar.setAttribute('data-day', data.day);
-            bar.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
-            sleepChart.appendChild(bar);
-        });
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    // Chatbot Logic
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
+/* Glass Components */
+.glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    padding: 1.75rem;
+    transition: all var(--transition-speed) ease;
+}
 
-    function addMessage(text, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`;
-        msgDiv.style.animation = 'fadeInUp 0.4s ease-out';
+.glass:hover {
+    border-color: rgba(148, 163, 184, 0.25);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
 
-        // จัดการเรื่องการเว้นบรรทัดและตัวหนาเบื้องต้น
-        let formattedText = text
-            .replace(/\n/g, '<br>')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+.shadow-glow:hover {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4), 0 0 24px rgba(99, 102, 241, 0.15);
+}
 
-        let innerHTML = '';
-        if (sender === 'bot') {
-            innerHTML += `
-                <div class="bot-avatar-msg">
-                    <img src="logo.png" alt="CareSleep">
-                </div>
-            `;
-        }
-        innerHTML += `<div class="message-bubble">${formattedText}</div>`;
+/* Dashboard Specifics */
+.hero-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.95), rgba(139, 92, 246, 0.95));
+    border-radius: 28px;
+    padding: 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    color: white;
+    box-shadow: 0 24px 48px rgba(99, 102, 241, 0.25), 0 0 64px rgba(139, 92, 246, 0.15);
+    transition: all var(--transition-speed) ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
 
-        msgDiv.innerHTML = innerHTML;
-        chatMessages.appendChild(msgDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return msgDiv;
+.hero-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 32px 64px rgba(99, 102, 241, 0.35), 0 0 80px rgba(139, 92, 246, 0.2);
+}
+
+.hero-text h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero-text p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    max-width: 450px;
+}
+
+.hero-text .highlight {
+    font-weight: 700;
+    color: #e0e7ff;
+}
+
+.sleep-score-circle {
+    position: relative;
+    width: 120px;
+    height: 120px;
+}
+
+.circular-chart {
+    display: block;
+    margin: 10px auto;
+    max-width: 100%;
+    max-height: 250px;
+}
+
+.circle-bg {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 2.8;
+}
+
+.circle {
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    animation: progress 2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes progress {
+    0% {
+        stroke-dasharray: 0 100;
     }
+}
 
-    function showTypingIndicator() {
-        const indicator = document.createElement('div');
-        indicator.className = 'message bot typing-indicator';
-        indicator.id = 'typing-indicator';
-        indicator.innerHTML = `
-            <div class="bot-avatar-msg">
-                <img src="logo.png" alt="CareSleep">
-            </div>
-            <div class="message-bubble">
-                <div class="dots"><span>.</span><span>.</span><span>.</span></div>
-            </div>
-        `;
-        chatMessages.appendChild(indicator);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return indicator;
+.percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.2rem;
+    font-weight: 900;
+    letter-spacing: -1px;
+    animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleIn {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.5);
     }
-
-    async function getGeminiResponse(userPrompt) {
-        const systemPrompt = `คุณคือ "ลูน่า" โค้ชสอนการนอนหลับในแอป "CareSleep AI" ตอบเป็นภาษาไทย
-        กฎสำคัญ:
-        - ตอบคำถามเฉพาะเรื่องที่เกี่ยวกับ การนอนหลับ, สุขภาพที่ส่งผลต่อการนอน, ความเครียด, และวิธีปรับปรุงคุณภาพการนอนเท่านั้น
-        - หากมีการถามเรื่องที่ไม่เกี่ยวข้อง ให้ตอบปฏิเสธอย่างสุภาพ
-        
-        กลยุทธ์การโค้ช (สำคัญมาก):
-        - หากผู้ใช้บ่นว่า "นอนไม่อิ่ม" "ตื่นมาไม่สดชื่น" หรือ "หลับยาก" ห้ามสรุปคำแนะนำทันที
-        - ให้คุณทำหน้าที่เป็นนักวิเคราะห์ โดยการถามคำถามเจาะลึกเพิ่ม 2-3 ข้อ เพื่อหาสาเหตุ เช่น:
-            1. สถาพแวดล้อม: อุณหภูมิห้อง, แสงไฟ, หรือเสียงรบกวนเป็นอย่างไร?
-            2. พฤติกรรม: ดื่มกาแฟหลังบ่ายสองไหม? เล่นมือถือก่อนนอนกี่นาที?
-            3. สภาวะจิตใจ: ช่วงนี้กังวลเรื่องอะไรเป็นพิเศษไหม?
-            4. ช่วงเวลา: เข้านอนและตื่นนอนเวลาเดิมทุกวันหรือไม่?
-        
-        คำแนะนำสำหรับการตอบ:
-        1. ใช้การเว้นบรรทัด (New line) ให้ชัดเจน
-        2. ใช้หัวข้อแบบจุด (Bullet points)
-        3. เน้นข้อความสำคัญด้วย **ตัวหนา**
-        4. ตอบด้วยความสุภาพและเป็นกันเอง`;
-
-        // รายชื่อโมเดลที่คุณใช้งานจริงได้จากรายการใน Console
-        const models = ["gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"];
-
-        let lastError = "";
-        for (const model of models) {
-            try {
-                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
-                const resp = await fetch(url, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        contents: [{ parts: [{ text: `${systemPrompt}\n\nคำถาม: ${userPrompt}` }] }]
-                    })
-                });
-
-                const data = await resp.json();
-                if (resp.ok) return data.candidates[0].content.parts[0].text;
-
-                lastError = data.error?.message || "Error";
-                console.warn(`Model ${model} failed: ${lastError}`);
-            } catch (err) {
-                lastError = err.message;
-            }
-        }
-        throw new Error(lastError);
+    100% {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
     }
+}
 
-    async function handleChat() {
-        const text = chatInput.value.trim();
-        if (!text) return;
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.75rem;
+    margin-bottom: 2.5rem;
+}
 
-        // Add user message
-        addMessage(text, 'user');
-        chatInput.value = '';
-        chatInput.focus();
-        
-        const indicator = showTypingIndicator();
+.stat-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all var(--transition-speed);
+}
 
-        try {
-            let response = "";
-            if (GEMINI_API_KEY && GEMINI_API_KEY.length > 20) {
-                response = await getGeminiResponse(text);
-            } else {
-                await new Promise(r => setTimeout(r, 1200));
-                response = translations[currentLang].bot_responses[Math.floor(Math.random() * translations[currentLang].bot_responses.length)];
-            }
-            indicator.remove();
-            addMessage(response, 'bot');
-        } catch (error) {
-            console.error(error);
-            indicator.remove();
-            addMessage(`ข้อผิดพลาด: ${error.message} (โปรดตรวจสอบ API Key หรืออินเทอร์เน็ต)`, 'bot');
-        }
+.stat-card:hover {
+    transform: translateY(-6px);
+}
+
+.stat-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.stat-header ion-icon {
+    font-size: 1.4rem;
+}
+
+.stat-value {
+    font-size: 1.9rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.stat-meta {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.stat-meta.success {
+    color: #10b981;
+}
+
+.indigo {
+    color: var(--accent-indigo);
+}
+
+.rose {
+    color: var(--accent-rose);
+}
+
+.amber {
+    color: var(--accent-amber);
+}
+
+.violet {
+    color: var(--accent-violet);
+}
+
+.dashboard-bottom-grid {
+    display: grid;
+    grid-template-columns: 1.8fr 1fr;
+    gap: 2rem;
+    margin-top: 2.5rem;
+}
+
+.chart-container h3,
+.tips-container h3 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.mock-chart {
+    height: 240px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    padding-top: 2rem;
+}
+
+.chart-bar {
+    flex-grow: 1;
+    background: linear-gradient(180deg, var(--accent-indigo), var(--accent-violet));
+    border-radius: 8px 8px 0 0;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.chart-bar:hover {
+    filter: brightness(1.25);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+    transform: translateY(-4px);
+}
+
+.chart-bar::after {
+    content: attr(data-day);
+    position: absolute;
+    bottom: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.insight-list {
+    list-style: none;
+    margin-top: 1.5rem;
+}
+
+.insight-list li {
+    display: flex;
+    gap: 1.2rem;
+    margin-bottom: 1.8rem;
+    padding: 1rem;
+    border-radius: 16px;
+    transition: all 0.3s;
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.insight-list li:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.insight-icon {
+    min-width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--accent-indigo);
+    flex-shrink: 0;
+}
+
+.insight-title {
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+}
+
+.insight-desc {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* Chat Styling */
+.chat-container {
+    height: calc(100vh - 200px);
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, 
+        rgba(30, 45, 65, 0.4),
+        rgba(45, 60, 90, 0.2));
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 2.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    background: linear-gradient(to bottom,
+        rgba(6, 17, 29, 0.3),
+        rgba(15, 26, 43, 0.2));
+}
+
+.message {
+    display: flex;
+    max-width: 80%;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
     }
-
-    if (sendBtn) {
-        sendBtn.addEventListener('click', handleChat);
-        chatInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') handleChat();
-        });
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
+}
 
-    // History Table Population
-    const historyBody = document.getElementById('history-body');
-    const historyData = [
-        { date: 'Oct 24, 2023', duration: '7h 24m', score: 84, stress: '22%', status: 'Recovered' },
-        { date: 'Oct 23, 2023', duration: '6h 45m', score: 72, stress: '35%', status: 'Tired' },
-        { date: 'Oct 22, 2023', duration: '8h 12m', score: 91, stress: '18%', status: 'Excellent' },
-        { date: 'Oct 21, 2023', duration: '7h 05m', score: 79, stress: '28%', status: 'Normal' },
-        { date: 'Oct 20, 2023', duration: '5h 30m', score: 55, stress: '52%', status: 'Stressed' },
-        { date: 'Oct 19, 2023', duration: '7h 50m', score: 88, stress: '20%', status: 'Recovered' },
-    ];
+.message.bot {
+    align-self: flex-start;
+    gap: 0.75rem;
+}
 
-    if (historyBody) {
-        historyData.forEach((item, index) => {
-            const row = document.createElement('tr');
-            row.style.animation = `fadeInUp 0.6s ease-out ${index * 0.05}s both`;
-            row.innerHTML = `
-                <td>${item.date}</td>
-                <td>${item.duration}</td>
-                <td><span style="font-weight:700; color:${getScoreColor(item.score)}">${item.score}</span></td>
-                <td>${item.stress}</td>
-                <td><span class="status-pill">${item.status}</span></td>
-            `;
-            historyBody.appendChild(row);
-        });
+.bot-avatar-msg {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.bot-avatar-msg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.message.user {
+    align-self: flex-end;
+}
+
+.message.user .message-bubble {
+    animation: scaleUserMessage 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes scaleUserMessage {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateX(20px);
     }
-
-    function getScoreColor(score) {
-        if (score >= 85) return '#10b981'; // Green
-        if (score >= 70) return '#6366f1'; // Indigo
-        return '#f43f5e'; // Rose
+    to {
+        opacity: 1;
+        transform: scale(1) translateX(0);
     }
-});
+}
+
+.message-bubble {
+    padding: 1.1rem 1.5rem;
+    border-radius: 20px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    position: relative;
+    transition: all var(--transition-speed);
+    word-wrap: break-word;
+}
+
+.bot .message-bubble {
+    background: linear-gradient(135deg, 
+        rgba(30, 41, 59, 0.8),
+        rgba(30, 41, 59, 0.6));
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-bottom-left-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(8px);
+}
+
+.user .message-bubble {
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+    color: white;
+    border-bottom-right-radius: 6px;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.message-bubble strong {
+    color: var(--accent-indigo);
+}
+
+.user .message-bubble strong {
+    color: #e0e7ff;
+}
+
+/* Typing Indicator Animation */
+.dots {
+    display: flex;
+    gap: 5px;
+    padding: 3px 0;
+}
+
+.dots span {
+    width: 7px;
+    height: 7px;
+    background: var(--accent-indigo);
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse-bounce 1.4s infinite ease-in-out both;
+}
+
+.dots span:nth-child(1) {
+    animation-delay: -0.32s;
+}
+
+.dots span:nth-child(2) {
+    animation-delay: -0.16s;
+}
+
+@keyframes pulse-bounce {
+    0%, 80%, 100% {
+        transform: scale(0.6);
+        opacity: 0.4;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.chat-input-area {
+    margin: 2rem;
+    margin-top: 1.75rem;
+    display: flex;
+    gap: 1rem;
+    padding: 1.75rem;
+    background: linear-gradient(135deg,
+        rgba(30, 41, 59, 0.6),
+        rgba(50, 70, 100, 0.3));
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 20px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.chat-input-area:focus-within {
+    border-color: rgba(99, 102, 241, 0.5);
+    background: linear-gradient(135deg,
+        rgba(30, 41, 59, 0.7),
+        rgba(50, 70, 100, 0.4));
+    box-shadow: 0 12px 32px rgba(99, 102, 241, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.chat-input-area input {
+    flex-grow: 1;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+    border-radius: 14px;
+    padding: 1rem 1.5rem;
+    color: white;
+    outline: none;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+    backdrop-filter: blur(8px);
+}
+
+.chat-input-area input:focus {
+    border-color: var(--accent-indigo);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+}
+
+.chat-input-area input::placeholder {
+    color: rgba(203, 213, 225, 0.45);
+    transition: all 0.3s;
+}
+
+.chat-input-area input:focus::placeholder {
+    color: rgba(203, 213, 225, 0.2);
+}
+
+.chat-input-area button {
+    width: 52px;
+    height: 52px;
+    background: linear-gradient(135deg, var(--accent-indigo), var(--accent-violet));
+    border: none;
+    border-radius: 14px;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.chat-input-area button::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(45deg, 
+        transparent 30%, 
+        rgba(255, 255, 255, 0.1) 50%, 
+        transparent 70%);
+    transform: translateX(-100%);
+}
+
+.chat-input-area button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 10px 28px rgba(99, 102, 241, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.chat-input-area button:hover::before {
+    animation: shine 0.6s ease-in-out;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.chat-input-area button:active {
+    transform: translateY(-1px) scale(0.98);
+}
+
+/* Analysis Styling */
+.analysis-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.analysis-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.analysis-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.analysis-card h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.8rem;
+    background: linear-gradient(135deg, #fff, #cbd5e1);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.analysis-card .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.correlation-stats {
+    margin-top: 2rem;
+}
+
+.corr-item .value {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+.corr-item {
+    margin-bottom: 1.75rem;
+}
+
+.corr-item .label {
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.progress-bar {
+    height: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+.progress-bar .fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent-indigo), var(--accent-violet));
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
+}
+
+.pie-chart-mock {
+    width: 160px;
+    height: 160px;
+    margin: 2.5rem auto;
+    border-radius: 50%;
+    background: conic-gradient(#6366f1 0% 25%,
+            #818cf8 25% 75%,
+            #a5b4fc 75% 95%,
+            #e0e7ff 95% 100%);
+    position: relative;
+    box-shadow: 0 12px 40px rgba(99, 102, 241, 0.25);
+    transition: all 0.3s;
+}
+
+.pie-chart-mock:hover {
+    transform: scale(1.05);
+    box-shadow: 0 16px 48px rgba(99, 102, 241, 0.35);
+}
+
+.pie-legend {
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: 0.85rem;
+    margin-top: 1.5rem;
+}
+
+.dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.dot.deep {
+    background: #6366f1;
+}
+
+.dot.light {
+    background: #818cf8;
+}
+
+.dot.rem {
+    background: #a5b4fc;
+}
+
+.dot.awake {
+    background: #e0e7ff;
+}
+
+/* History Section Controls */
+.history-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2.5rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    flex-grow: 1;
+    max-width: 450px;
+    transition: all 0.3s;
+}
+
+.search-box:focus-within {
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
+    border-color: var(--accent-indigo);
+}
+
+.search-box ion-icon {
+    font-size: 1.3rem;
+    color: var(--accent-indigo);
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    width: 100%;
+    font-size: 0.95rem;
+    transition: all 0.3s;
+}
+
+.search-box input::placeholder {
+    color: rgba(203, 213, 225, 0.4);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.btn-filter {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    padding: 0.8rem 1.6rem;
+    border-radius: 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.95rem;
+}
+
+.btn-filter:hover {
+    background: var(--accent-indigo);
+    border-color: var(--accent-indigo);
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    transform: translateY(-2px);
+}
+
+/* History Table */
+.history-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.history-list th {
+    text-align: left;
+    padding: 1.2rem 1.2rem;
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-bottom: 1px solid var(--glass-border);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.history-list td {
+    padding: 1.4rem 1.2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    transition: all 0.3s;
+}
+
+.history-list tr {
+    transition: all 0.3s;
+}
+
+.history-list tr:hover {
+    background: rgba(99, 102, 241, 0.06);
+}
+
+/* Status Pills and Labels */
+.status-pill {
+    padding: 0.5rem 1rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid var(--accent-indigo);
+    color: var(--accent-indigo);
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.status-pill:hover {
+    background: rgba(99, 102, 241, 0.15);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.gauge-center {
+    text-align: center;
+    padding: 1.5rem;
+    border: 2px solid var(--glass-border);
+    border-radius: 50%;
+    width: 140px;
+    height: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 1.5rem auto;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.05));
+    transition: all 0.3s;
+}
+
+.gauge-center:hover {
+    border-color: var(--accent-indigo);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+}
+
+.risk-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.risk-value.low {
+    color: var(--accent-emerald);
+    font-weight: 900;
+    font-size: 1.8rem;
+    letter-spacing: -0.5px;
+}
+
+.risk-desc {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 1.5rem;
+    line-height: 1.6;
+}
