@@ -1,3 +1,5 @@
+const GEMINI_API_KEY = 'AIzaSyCwDYmtWRYVfvjOL5EW2GaZCP0CgnNhD1k';
+
 document.addEventListener('DOMContentLoaded', () => {
     // Translation Data
     const translations = {
@@ -129,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function switchLanguage(lang) {
         currentLang = lang;
-        
+
         // Update Class
         document.getElementById('lang-th').classList.toggle('active', lang === 'th');
         document.getElementById('lang-en').classList.toggle('active', lang === 'en');
@@ -176,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
 
-            // Show Section
+            // Show Section with smooth transition
             sections.forEach(sec => {
                 sec.classList.remove('active');
                 if (sec.id === page) {
@@ -184,8 +186,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Update Title
-            pageTitle.textContent = link.querySelector('span').textContent;
+            // Update Title with animation
+            pageTitle.style.opacity = '0';
+            setTimeout(() => {
+                pageTitle.textContent = link.querySelector('span').textContent;
+                pageTitle.style.transition = 'all 0.4s ease';
+                pageTitle.style.opacity = '1';
+            }, 150);
         });
     });
 
@@ -202,11 +209,12 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     if (sleepChart) {
-        weeklyData.forEach(data => {
+        weeklyData.forEach((data, index) => {
             const bar = document.createElement('div');
             bar.className = 'chart-bar';
             bar.style.height = `${(data.hours / 10) * 100}%`;
             bar.setAttribute('data-day', data.day);
+            bar.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
             sleepChart.appendChild(bar);
         });
     }
@@ -219,7 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function addMessage(text, sender) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        
+        msgDiv.style.animation = 'fadeInUp 0.4s ease-out';
+
+        // จัดการเรื่องการเว้นบรรทัดและตัวหนาเบื้องต้น
+        let formattedText = text
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
         let innerHTML = '';
         if (sender === 'bot') {
             innerHTML += `
@@ -228,39 +242,104 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }
-        innerHTML += `<div class="message-bubble">${text}</div>`;
-        
+        innerHTML += `<div class="message-bubble">${formattedText}</div>`;
+
         msgDiv.innerHTML = innerHTML;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv;
     }
 
-    function handleChat() {
-        const text = chatInput.value.trim().toLowerCase();
+    function showTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.className = 'message bot typing-indicator';
+        indicator.id = 'typing-indicator';
+        indicator.innerHTML = `
+            <div class="bot-avatar-msg">
+                <img src="logo.png" alt="CareSleep">
+            </div>
+            <div class="message-bubble">
+                <div class="dots"><span>.</span><span>.</span><span>.</span></div>
+            </div>
+        `;
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return indicator;
+    }
+
+    async function getGeminiResponse(userPrompt) {
+        const systemPrompt = `คุณคือ "ลูน่า" โค้ชสอนการนอนหลับในแอป "CareSleep AI" ตอบเป็นภาษาไทย
+        กฎสำคัญ:
+        - ตอบคำถามเฉพาะเรื่องที่เกี่ยวกับ การนอนหลับ, สุขภาพที่ส่งผลต่อการนอน, ความเครียด, และวิธีปรับปรุงคุณภาพการนอนเท่านั้น
+        - หากมีการถามเรื่องที่ไม่เกี่ยวข้อง ให้ตอบปฏิเสธอย่างสุภาพ
+        
+        กลยุทธ์การโค้ช (สำคัญมาก):
+        - หากผู้ใช้บ่นว่า "นอนไม่อิ่ม" "ตื่นมาไม่สดชื่น" หรือ "หลับยาก" ห้ามสรุปคำแนะนำทันที
+        - ให้คุณทำหน้าที่เป็นนักวิเคราะห์ โดยการถามคำถามเจาะลึกเพิ่ม 2-3 ข้อ เพื่อหาสาเหตุ เช่น:
+            1. สถาพแวดล้อม: อุณหภูมิห้อง, แสงไฟ, หรือเสียงรบกวนเป็นอย่างไร?
+            2. พฤติกรรม: ดื่มกาแฟหลังบ่ายสองไหม? เล่นมือถือก่อนนอนกี่นาที?
+            3. สภาวะจิตใจ: ช่วงนี้กังวลเรื่องอะไรเป็นพิเศษไหม?
+            4. ช่วงเวลา: เข้านอนและตื่นนอนเวลาเดิมทุกวันหรือไม่?
+        
+        คำแนะนำสำหรับการตอบ:
+        1. ใช้การเว้นบรรทัด (New line) ให้ชัดเจน
+        2. ใช้หัวข้อแบบจุด (Bullet points)
+        3. เน้นข้อความสำคัญด้วย **ตัวหนา**
+        4. ตอบด้วยความสุภาพและเป็นกันเอง`;
+
+        // รายชื่อโมเดลที่คุณใช้งานจริงได้จากรายการใน Console
+        const models = ["gemini-2.0-flash", "gemini-flash-latest", "gemini-pro-latest"];
+
+        let lastError = "";
+        for (const model of models) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nคำถาม: ${userPrompt}` }] }]
+                    })
+                });
+
+                const data = await resp.json();
+                if (resp.ok) return data.candidates[0].content.parts[0].text;
+
+                lastError = data.error?.message || "Error";
+                console.warn(`Model ${model} failed: ${lastError}`);
+            } catch (err) {
+                lastError = err.message;
+            }
+        }
+        throw new Error(lastError);
+    }
+
+    async function handleChat() {
+        const text = chatInput.value.trim();
         if (!text) return;
 
-        addMessage(chatInput.value.trim(), 'user');
+        // Add user message
+        addMessage(text, 'user');
         chatInput.value = '';
+        chatInput.focus();
+        
+        const indicator = showTypingIndicator();
 
-        // Simulate Bot Typing
-        setTimeout(() => {
+        try {
             let response = "";
-            const langData = translations[currentLang];
-
-            // Keyword Matching
-            if (text.includes('งาน') || text.includes('work') || text.includes('office') || text.includes('job')) {
-                response = langData.advice_work;
-            } else if (text.includes('เครียด') || text.includes('stress') || text.includes('worry') || text.includes('กังวล')) {
-                response = langData.advice_stress;
-            } else if (text.includes('นอนไม่หลับ') || text.includes('can\'t sleep') || text.includes('insomnia') || text.includes('หลับไม่ลง')) {
-                response = langData.advice_insomnia;
+            if (GEMINI_API_KEY && GEMINI_API_KEY.length > 20) {
+                response = await getGeminiResponse(text);
             } else {
-                const currentResponses = langData.bot_responses;
-                response = currentResponses[Math.floor(Math.random() * currentResponses.length)];
+                await new Promise(r => setTimeout(r, 1200));
+                response = translations[currentLang].bot_responses[Math.floor(Math.random() * translations[currentLang].bot_responses.length)];
             }
-            
+            indicator.remove();
             addMessage(response, 'bot');
-        }, 800);
+        } catch (error) {
+            console.error(error);
+            indicator.remove();
+            addMessage(`ข้อผิดพลาด: ${error.message} (โปรดตรวจสอบ API Key หรืออินเทอร์เน็ต)`, 'bot');
+        }
     }
 
     if (sendBtn) {
@@ -282,12 +361,13 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     if (historyBody) {
-        historyData.forEach(item => {
+        historyData.forEach((item, index) => {
             const row = document.createElement('tr');
+            row.style.animation = `fadeInUp 0.6s ease-out ${index * 0.05}s both`;
             row.innerHTML = `
                 <td>${item.date}</td>
                 <td>${item.duration}</td>
-                <td><span style="font-weight:600; color:${getScoreColor(item.score)}">${item.score}</span></td>
+                <td><span style="font-weight:700; color:${getScoreColor(item.score)}">${item.score}</span></td>
                 <td>${item.stress}</td>
                 <td><span class="status-pill">${item.status}</span></td>
             `;
