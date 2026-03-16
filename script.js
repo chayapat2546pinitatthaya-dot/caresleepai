@@ -1,3 +1,22 @@
+// ป้องกัน API Key: กรุณาตั้งค่า API Key ของคุณเอง
+// วิธี: แทนที่ค่า YOUR_API_KEY_HERE ด้านล่างนี้
+const GEMINI_API_KEY = 'AIzaSyCVKfkAUM1rHngcaEWlwz2EieocReBfYAY';
+let isApiKeyValid = false;
+let isDemoMode = false;
+
+// ตรวจสอบและเตรียม API Key
+function initializeApiKey() {
+    // หาก key ยังเป็นค่าเริ่มต้น
+    if (GEMINI_API_KEY === 'YOUR_API_KEY_HERE' || !GEMINI_API_KEY || GEMINI_API_KEY.length < 20) {
+        isDemoMode = true;
+        console.warn('⚠️ API Key is not configured. Using Demo Mode with simulated responses.');
+        return false;
+    }
+    isApiKeyValid = true;
+    console.log('✓ API Key initialized');
+    return true;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     // Translation Data
     const translations = {
@@ -9,43 +28,30 @@ document.addEventListener('DOMContentLoaded', () => {
             user_status: "Pro Account",
             sync_btn: "Sync Watch",
             hero_title: "Good morning, Thanaphong!",
-            hero_desc_good: "Your sleep quality was <span class='highlight' style='color:#10b981;'>84%</span> last night. You're recovered and ready to go.",
-            hero_desc_bad: "Your sleep quality was <span class='highlight' style='color:#f43f5e;'>45%</span> last night. You might feel tired today.",
+            hero_desc: "Your sleep quality was <span class='highlight'>84%</span> last night. You're recovered and ready to go.",
             stat_duration: "Sleep Duration",
-            stat_duration_meta_good: "+42m from yesterday",
-            stat_duration_meta_bad: "-1h 30m from yesterday",
+            stat_duration_meta: "+42m from yesterday",
             stat_hr: "Avg Heart Rate",
-            stat_hr_meta_good: "Normal Range",
-            stat_hr_meta_bad: "High resting HR",
+            stat_hr_meta: "Normal Range",
             stat_stress: "Stress Level",
-            stat_stress_meta_good: "Low Stress",
-            stat_stress_meta_bad: "High Stress",
+            stat_stress_meta: "Low Stress",
             stat_deep: "Deep Sleep",
-            stat_deep_meta_good: "Good Quality",
-            stat_deep_meta_bad: "Poor Quality",
-            res_good: "Good",
-            res_bad: "Poor",
+            stat_deep_meta: "Good Quality",
             chart_title: "Sleep Activity (Weekly)",
             insights_title: "AI Insights",
-            insight_1_title_good: "Late Caffeine",
-            insight_1_desc_good: "You had coffee at 4 PM. This might delay your deep sleep starts.",
-            insight_2_title_good: "Screen Time",
-            insight_2_desc_good: "High blue light exposure detected 30 mins before bed.",
-            insight_1_title_bad: "Irregular Rhythm",
-            insight_1_desc_bad: "You've been going to bed at very different times. This causes high insomnia risk.",
-            insight_2_title_bad: "High Stress",
-            insight_2_desc_bad: "Your HRV shows high stress levels during the day, making it hard to relax.",
+            insight_1_title: "Late Caffeine",
+            insight_1_desc: "You had coffee at 4 PM. This might delay your deep sleep starts.",
+            insight_2_title: "Screen Time",
+            insight_2_desc: "High blue light exposure detected 30 mins before bed.",
             chat_placeholder: "Type your message here...",
             analysis_title: "Detailed Stress & Recovery",
             analysis_subtitle: "AI Correlation Analysis based on your lifestyle patterns.",
             corr_caffeine: "Caffeine Impact",
             corr_exercise: "Exercise Benefit",
             corr_phone: "Phone Usage Before Bed",
-            val_high: "High",
-            val_very_high: "Very High",
-            val_negative: "Negative Impact",
-            val_moderate: "Moderate Impact",
-            val_severe: "Severe Impact",
+            val_high: "High (75%)",
+            val_very_high: "Very High (90%)",
+            val_negative: "Negative Impact (85%)",
             stage_title: "Sleep Stage Analysis",
             legend_deep: "Deep",
             legend_light: "Light",
@@ -54,9 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             risk_title: "Risk Assessment",
             risk_label: "Insomnia Risk",
             risk_low: "LOW",
-            risk_high: "HIGH",
-            risk_desc_good: "Based on your trends, you are maintaining a healthy circadian rhythm.",
-            risk_desc_bad: "Elevated risk detected. Your sleep schedule is irregular and shows severe fragmentation.",
+            risk_desc: "Based on your trends, you are maintaining a healthy circadian rhythm.",
             history_search: "Search past nights...",
             filter_30: "Last 30 Days",
             filter_month: "This Month",
@@ -85,43 +89,30 @@ document.addEventListener('DOMContentLoaded', () => {
             user_status: "บัญชีโปร",
             sync_btn: "ซิงค์นาฬิกา",
             hero_title: "สวัสดีตอนเช้า, คุณธนพงศ์!",
-            hero_desc_good: "คุณภาพการนอนของคุณเมื่อคืนคือ <span class='highlight' style='color:#10b981;'>84%</span> คุณฟื้นฟูร่างกายได้ดีและพร้อมสำหรับวันใหม่",
-            hero_desc_bad: "คุณภาพการนอนของคุณเมื่อคืนคือ <span class='highlight' style='color:#f43f5e;'>45%</span> คุณอาจรู้สึกเหนื่อยล้าในวันนี้",
+            hero_desc: "คุณภาพการนอนของคุณเมื่อคืนคือ <span class='highlight'>84%</span> คุณฟื้นฟูร่างกายได้ดีและพร้อมสำหรับวันใหม่",
             stat_duration: "ระยะเวลาการนอน",
-            stat_duration_meta_good: "+42 นาที จากเมื่อวาน",
-            stat_duration_meta_bad: "-1 ชม. 30 นาที จากเมื่อวาน",
+            stat_duration_meta: "+42 นาที จากเมื่อวาน",
             stat_hr: "อัตราการเต้นหัวใจเฉลี่ย",
-            stat_hr_meta_good: "อยู่ในเกณฑ์ปกติ",
-            stat_hr_meta_bad: "อัตราการเต้นหัวใจขณะพักสูง",
+            stat_hr_meta: "อยู่ในเกณฑ์ปกติ",
             stat_stress: "ระดับความเครียด",
-            stat_stress_meta_good: "ความเครียดต่ำ",
-            stat_stress_meta_bad: "ความเครียดสูง",
+            stat_stress_meta: "ความเครียดต่ำ",
             stat_deep: "หลับลึก",
-            stat_deep_meta_good: "คุณภาพดี",
-            stat_deep_meta_bad: "คุณภาพแย่",
-            res_good: "ดี",
-            res_bad: "แย่",
+            stat_deep_meta: "คุณภาพดี",
             chart_title: "กิจกรรมการนอน (รายสัปดาห์)",
             insights_title: "ข้อมูลจาก AI",
-            insight_1_title_good: "คาเฟอีนช่วงเย็น",
-            insight_1_desc_good: "คุณดื่มกาแฟตอน 16:00 น. ซึ่งอาจทำให้การหลับลึกเริ่มช้าลง",
-            insight_2_title_good: "การใช้หน้าจอ",
-            insight_2_desc_good: "ตรวจพบการใช้แสงสีน้ำเงินสูง 30 นาทีก่อนนอน",
-            insight_1_title_bad: "วงจรการนอนไม่สม่ำเสมอ",
-            insight_1_desc_bad: "คุณเข้านอนไม่เป็นเวลา ส่งผลให้ความเสี่ยงการนอนไม่หลับเพิ่มสูงขึ้น",
-            insight_2_title_bad: "ความเครียดสูง",
-            insight_2_desc_bad: "ระดับความเครียดสะสมระหว่างวันสูงมาก ทำให้ร่างกายผ่อนคลายได้ยาก",
+            insight_1_title: "คาเฟอีนช่วงเย็น",
+            insight_1_desc: "คุณดื่มกาแฟตอน 16:00 น. ซึ่งอาจทำให้การหลับลึกเริ่มช้าลง",
+            insight_2_title: "การใช้หน้าจอ",
+            insight_2_desc: "ตรวจพบการใช้แสงสีน้ำเงินสูง 30 นาทีก่อนนอน",
             chat_placeholder: "พิมพ์ข้อความที่นี่...",
             analysis_title: "รายละเอียดความเครียดและการฟื้นฟู",
             analysis_subtitle: "การวิเคราะห์ความสัมพันธ์โดย AI ตามพฤติกรรมของคุณ",
             corr_caffeine: "ผลกระทบจากคาเฟอีน",
             corr_exercise: "ประโยชน์จากการออกกำลังกาย",
             corr_phone: "การใช้มือถือก่อนนอน",
-            val_high: "สูง",
-            val_very_high: "สูงมาก",
-            val_negative: "ผลกระทบเชิงลบ",
-            val_moderate: "ผลกระทบปานกลาง",
-            val_severe: "ผลกระทบรุนแรง",
+            val_high: "สูง (75%)",
+            val_very_high: "สูงมาก (90%)",
+            val_negative: "ผลกระทบเชิงลบ (85%)",
             stage_title: "วิเคราะห์ระยะการนอน",
             legend_deep: "หลับลึก",
             legend_light: "หลับตื้น",
@@ -130,9 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
             risk_title: "การประเมินความเสี่ยง",
             risk_label: "ความเสี่ยงนอนไม่หลับ",
             risk_low: "ต่ำ",
-            risk_high: "สูง",
-            risk_desc_good: "จากแนวโน้มของคุณ คุณกำลังรักษาวงจรการนอนที่ดี",
-            risk_desc_bad: "พบความเสี่ยงสูง ตารางการนอนของคุณไม่สม่ำเสมอและมีการตื่นกลางดึกบ่อยครั้ง",
+            risk_desc: "จากแนวโน้มของคุณ คุณกำลังรักษาวงจรการนอนที่ดี",
             history_search: "ค้นหาประวัติการนอน...",
             filter_30: "30 วันที่ผ่านมา",
             filter_month: "เดือนนี้",
@@ -156,179 +145,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     let currentLang = 'th';
-    let currentResult = 'good';
-
-    const resultData = {
-        good: {
-            score: 84,
-            duration: "7h 24m",
-            meta_duration_class: "success",
-            meta_duration_i18n: "stat_duration_meta_good",
-            hr: "58 BPM",
-            meta_hr_class: "",
-            meta_hr_i18n: "stat_hr_meta_good",
-            stress: "22%",
-            meta_stress_class: "success",
-            meta_stress_i18n: "stat_stress_meta_good",
-            deep: "1h 45m",
-            meta_deep_class: "",
-            meta_deep_i18n: "stat_deep_meta_good",
-            hero_desc_i18n: "hero_desc_good",
-            chart_data: [7.5, 6.8, 8.2, 7.1, 6.5, 8.5, 7.0],
-            insight_1: { icon: "cafe-outline", title: "insight_1_title_good", desc: "insight_1_desc_good" },
-            insight_2: { icon: "phone-portrait-outline", title: "insight_2_title_good", desc: "insight_2_desc_good" },
-            corr_caffeine: { w: 75, val: "val_high" },
-            corr_exercise: { w: 90, val: "val_very_high" },
-            corr_phone: { w: 85, val: "val_negative" },
-            pie: { deep: 25, light: 50, rem: 20, awake: 5 },
-            risk_class: "low",
-            risk_i18n: "risk_low",
-            risk_desc_i18n: "risk_desc_good",
-            history_0: { date: 'Oct 24, 2023', duration: '7h 24m', score: 84, stress: '22%', status: 'Recovered' }
-        },
-        bad: {
-            score: 45,
-            duration: "4h 15m",
-            meta_duration_class: "warning",
-            meta_duration_i18n: "stat_duration_meta_bad",
-            hr: "85 BPM",
-            meta_hr_class: "warning",
-            meta_hr_i18n: "stat_hr_meta_bad",
-            stress: "78%",
-            meta_stress_class: "warning",
-            meta_stress_i18n: "stat_stress_meta_bad",
-            deep: "25m",
-            meta_deep_class: "warning",
-            meta_deep_i18n: "stat_deep_meta_bad",
-            hero_desc_i18n: "hero_desc_bad",
-            chart_data: [4.5, 5.0, 3.8, 6.0, 2.5, 4.0, 4.2],
-            insight_1: { icon: "calendar-outline", title: "insight_1_title_bad", desc: "insight_1_desc_bad" },
-            insight_2: { icon: "flash-outline", title: "insight_2_title_bad", desc: "insight_2_desc_bad" },
-            corr_caffeine: { w: 95, val: "val_very_high" },
-            corr_exercise: { w: 30, val: "val_moderate" },
-            corr_phone: { w: 95, val: "val_severe" },
-            pie: { deep: 8, light: 65, rem: 7, awake: 20 },
-            risk_class: "high",
-            risk_i18n: "risk_high",
-            risk_desc_i18n: "risk_desc_bad",
-            history_0: { date: 'Oct 24, 2023', duration: '4h 15m', score: 45, stress: '78%', status: 'Exhausted' }
-        }
-    };
-
-    function updateResultUI() {
-        const data = resultData[currentResult];
-        
-        const circle = document.querySelector('.circle');
-        const percentage = document.querySelector('.percentage');
-        if (circle) {
-            circle.setAttribute('stroke-dasharray', `${data.score}, 100`);
-            circle.style.stroke = getScoreColor(data.score);
-        }
-        if (percentage) percentage.textContent = data.score;
-
-        const valDuration = document.getElementById('val-duration');
-        if (valDuration) valDuration.textContent = data.duration;
-        
-        const valHr = document.getElementById('val-hr');
-        if (valHr) valHr.textContent = data.hr;
-
-        const valStress = document.getElementById('val-stress');
-        if (valStress) valStress.textContent = data.stress;
-
-        const valDeep = document.getElementById('val-deep');
-        if (valDeep) valDeep.textContent = data.deep;
-
-        updateMetaElement('hero-desc', data.hero_desc_i18n, '');
-        updateMetaElement('meta-duration', data.meta_duration_i18n, data.meta_duration_class);
-        updateMetaElement('meta-hr', data.meta_hr_i18n, data.meta_hr_class);
-        updateMetaElement('meta-stress', data.meta_stress_i18n, data.meta_stress_class);
-        updateMetaElement('meta-deep', data.meta_deep_i18n, data.meta_deep_class);
-
-        // Update Charts Data
-        const chartBars = document.querySelectorAll('.chart-bar');
-        chartBars.forEach((bar, index) => {
-            if(data.chart_data[index]) {
-                bar.style.height = `${(data.chart_data[index] / 10) * 100}%`;
-                bar.style.background = currentResult === 'good' ? 'linear-gradient(to top, var(--accent-indigo), var(--accent-violet))' : 'linear-gradient(to top, #f43f5e, #fb7185)';
-            }
-        });
-
-        // Insights
-        const i1 = data.insight_1, i2 = data.insight_2;
-        document.getElementById('insight-1-icon').setAttribute('name', i1.icon);
-        updateMetaElement('insight-1-title', i1.title, '');
-        updateMetaElement('insight-1-desc', i1.desc, '');
-        document.getElementById('insight-2-icon').setAttribute('name', i2.icon);
-        updateMetaElement('insight-2-title', i2.title, '');
-        updateMetaElement('insight-2-desc', i2.desc, '');
-
-        // Analysis Correlational Stats
-        updateCorrStats('caffeine', data.corr_caffeine);
-        updateCorrStats('exercise', data.corr_exercise);
-        updateCorrStats('phone', data.corr_phone);
-
-        // Pie Chart
-        const pie = data.pie;
-        const sum_v1 = pie.deep;
-        const sum_v2 = pie.deep + pie.light;
-        const sum_v3 = pie.deep + pie.light + pie.rem;
-        const pieStyle = `conic-gradient(
-            #6366f1 0% ${sum_v1}%,
-            #818cf8 ${sum_v1}% ${sum_v2}%,
-            #a5b4fc ${sum_v2}% ${sum_v3}%,
-            #e0e7ff ${sum_v3}% 100%
-        )`;
-        const pieChart = document.getElementById('sleep-pie-chart');
-        if(pieChart) pieChart.style.background = pieStyle;
-        if(document.getElementById('pct-deep')) document.getElementById('pct-deep').textContent = pie.deep;
-        if(document.getElementById('pct-light')) document.getElementById('pct-light').textContent = pie.light;
-        if(document.getElementById('pct-rem')) document.getElementById('pct-rem').textContent = pie.rem;
-        if(document.getElementById('pct-awake')) document.getElementById('pct-awake').textContent = pie.awake;
-
-        // Risk Gauge
-        updateMetaElement('risk-value', data.risk_i18n, data.risk_class);
-        updateMetaElement('risk-desc', data.risk_desc_i18n, '');
-
-        // Update History
-        renderHistory();
-    }
-
-    function updateCorrStats(id, data) {
-        const fill = document.getElementById(`fill-${id}`);
-        const val = document.getElementById(`val-${id}`);
-        if(fill) {
-            fill.style.width = `${data.w}%`;
-            fill.style.background = currentResult === 'good' ? 'linear-gradient(to right, var(--accent-indigo), var(--accent-violet))' : 'linear-gradient(to right, #f43f5e, #fda4af)';
-        }
-        if(val) {
-            val.setAttribute('data-i18n', data.val);
-            if (translations[currentLang] && translations[currentLang][data.val]) {
-                val.innerHTML = `${translations[currentLang][data.val]} (${data.w}%)`;
-            }
-        }
-    }
-
-    function updateMetaElement(id, i18nKey, className) {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.setAttribute('data-i18n', i18nKey);
-        el.className = 'stat-meta ' + className;
-        if (id === 'hero-desc') el.className = '';
-        if (translations[currentLang] && translations[currentLang][i18nKey]) {
-            el.innerHTML = translations[currentLang][i18nKey];
-        }
-    }
-
-    function switchResult(res) {
-        currentResult = res;
-        document.getElementById('res-good').classList.toggle('active', res === 'good');
-        document.getElementById('res-bad').classList.toggle('active', res === 'bad');
-        updateResultUI();
-    }
 
     function switchLanguage(lang) {
         currentLang = lang;
-        
+
         // Update Class
         document.getElementById('lang-th').classList.toggle('active', lang === 'th');
         document.getElementById('lang-en').classList.toggle('active', lang === 'en');
@@ -359,19 +179,14 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('lang-th').addEventListener('click', () => switchLanguage('th'));
     document.getElementById('lang-en').addEventListener('click', () => switchLanguage('en'));
 
-    const resGoodBtn = document.getElementById('res-good');
-    const resBadBtn = document.getElementById('res-bad');
-    if (resGoodBtn) resGoodBtn.addEventListener('click', () => switchResult('good'));
-    if (resBadBtn) resBadBtn.addEventListener('click', () => switchResult('bad'));
+    // Initialize API Key and show status
+    initializeApiKey();
+    if (isDemoMode) {
+        console.info('💡 To enable full AI features, set your Gemini API Key in script.js');
+    }
 
     // Initialize in Thai
     switchLanguage('th');
-    
-    // Set initial chart color
-    const initialCircle = document.querySelector('.circle');
-    if (initialCircle) {
-        initialCircle.style.stroke = getScoreColor(84);
-    }
 
     // Navigation Logic
     const navLinks = document.querySelectorAll('.nav-links li');
@@ -386,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
             navLinks.forEach(l => l.classList.remove('active'));
             link.classList.add('active');
 
-            // Show Section
+            // Show Section with smooth transition
             sections.forEach(sec => {
                 sec.classList.remove('active');
                 if (sec.id === page) {
@@ -394,29 +209,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
 
-            // Update Title
-            pageTitle.textContent = link.querySelector('span').textContent;
+            // Update Title with animation
+            pageTitle.style.opacity = '0';
+            setTimeout(() => {
+                pageTitle.textContent = link.querySelector('span').textContent;
+                pageTitle.style.transition = 'all 0.4s ease';
+                pageTitle.style.opacity = '1';
+            }, 150);
         });
     });
 
     // Mock Weekly Sleep Chart
     const sleepChart = document.getElementById('sleep-chart');
-    const mockWeeklyData = [
-        { day: 'Mon', h: 7 },
-        { day: 'Tue', h: 6.8 },
-        { day: 'Wed', h: 8.2 },
-        { day: 'Thu', h: 7.1 },
-        { day: 'Fri', h: 6.5 },
-        { day: 'Sat', h: 8.5 },
-        { day: 'Sun', h: 7.0 },
+    const weeklyData = [
+        { day: 'Mon', hours: 7.5 },
+        { day: 'Tue', hours: 6.8 },
+        { day: 'Wed', hours: 8.2 },
+        { day: 'Thu', hours: 7.1 },
+        { day: 'Fri', hours: 6.5 },
+        { day: 'Sat', hours: 8.5 },
+        { day: 'Sun', hours: 7.9 },
     ];
 
     if (sleepChart) {
-        mockWeeklyData.forEach((data, index) => {
+        weeklyData.forEach((data, index) => {
             const bar = document.createElement('div');
             bar.className = 'chart-bar';
-            bar.style.height = `${(data.h / 10) * 100}%`;
+            bar.style.height = `${(data.hours / 10) * 100}%`;
             bar.setAttribute('data-day', data.day);
+            bar.style.animation = `fadeInUp 0.6s ease-out ${index * 0.1}s both`;
             sleepChart.appendChild(bar);
         });
     }
@@ -426,10 +247,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
 
+    // แสดงข้อความประบาทหากใช้ Demo Mode
+    if (isDemoMode && chatMessages && chatMessages.children.length > 0) {
+        const demoNotice = document.createElement('div');
+        demoNotice.className = 'message bot';
+        demoNotice.style.marginBottom = '1.5rem';
+        demoNotice.innerHTML = `
+            <div class="bot-avatar-msg">
+                <img src="logo.png" alt="CareSleep">
+            </div>
+            <div class="message-bubble" style="background: rgba(251, 146, 60, 0.15); border: 1px solid rgba(251, 146, 60, 0.3);">
+                <strong>🔔 Notice:</strong> Currently in Demo Mode (API Key not configured). 
+                <br>To enable AI responses: Set your Gemini API Key in script.js
+            </div>
+        `;
+        // ใส่หลังจากข้อความต่อนสุดท้าย หรือท้ายสุดถ้ามี child มากกว่า 1
+        if (chatMessages.children.length > 1) {
+            chatMessages.insertBefore(demoNotice, chatMessages.children[1]);
+        } else {
+            chatMessages.appendChild(demoNotice);
+        }
+    }
+
     function addMessage(text, sender) {
         const msgDiv = document.createElement('div');
         msgDiv.className = `message ${sender}`;
-        
+        msgDiv.style.animation = 'fadeInUp 0.4s ease-out';
+
+        // จัดการเรื่องการเว้นบรรทัดและตัวหนาเบื้องต้น
+        let formattedText = text
+            .replace(/\n/g, '<br>')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+
         let innerHTML = '';
         if (sender === 'bot') {
             innerHTML += `
@@ -438,39 +287,151 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
         }
-        innerHTML += `<div class="message-bubble">${text}</div>`;
-        
+        innerHTML += `<div class="message-bubble">${formattedText}</div>`;
+
         msgDiv.innerHTML = innerHTML;
         chatMessages.appendChild(msgDiv);
         chatMessages.scrollTop = chatMessages.scrollHeight;
+        return msgDiv;
     }
 
-    function handleChat() {
-        const text = chatInput.value.trim().toLowerCase();
+    function showTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.className = 'message bot typing-indicator';
+        indicator.id = 'typing-indicator';
+        indicator.innerHTML = `
+            <div class="bot-avatar-msg">
+                <img src="logo.png" alt="CareSleep">
+            </div>
+            <div class="message-bubble">
+                <div class="dots"><span>.</span><span>.</span><span>.</span></div>
+            </div>
+        `;
+        chatMessages.appendChild(indicator);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        return indicator;
+    }
+
+    async function getGeminiResponse(userPrompt) {
+        // หากไม่ได้ configure API Key
+        if (!isApiKeyValid || isDemoMode) {
+            throw new Error('API Key not configured. Please set your Gemini API Key.');
+        }
+
+        const systemPrompt = `คุณคือ "ลูน่า" โค้ชสอนการนอนหลับในแอป "CareSleep AI" ตอบเป็นภาษาไทย
+        กฎสำคัญ:
+        - ห้ามบอกว่าคุณคือ AI ของ Google, Gemini หรือโปรแกรมคอมพิวเตอร์เด็ดขาด คุณคือ "ลูน่า" โค้ชตัวจริงเท่านั้น
+        - หากถูกถามว่าเป็น AI อะไร หรือใช้เทคโนโลยีอะไร ให้ตอบว่า "ฉันคือลูน่า โค้ชส่วนตัวที่คุณไว้วางใจในการดูแลการนอนค่ะ"
+        - ตอบคำถามเฉพาะเรื่องที่เกี่ยวกับ การนอนหลับ, สุขภาพที่ส่งผลต่อการนอน, ความเครียด, และวิธีปรับปรุงคุณภาพการนอนเท่านั้น
+        - หากมีการถามเรื่องที่ไม่เกี่ยวข้อง ให้ตอบปฏิเสธอย่างสุภาพ
+
+        กลยุทธ์การโค้ช (สำคัญมาก):
+        - หากผู้ใช้บ่นว่า "นอนไม่อิ่ม" "ตื่นมาไม่สดชื่น" หรือ "หลับยาก" ห้ามสรุปคำแนะนำทันที
+        - ให้คุณทำหน้าที่เป็นนักวิเคราะห์ โดยการถามคำถามเจาะลึกเพิ่ม 2-3 ข้อ เพื่อหาสาเหตุ เช่น:
+            1. สถาพแวดล้อม: อุณหภูมิห้อง, แสงไฟ, หรือเสียง rรบกวนเป็นอย่างไร?
+            2. พฤติกรรม: ดื่มกาแฟหลังบ่ายสองไหม? เล่นมือถือก่อนนอนกี่นาที?
+            3. สภาวะจิตใจ: ช่วงนี้กังวลเรื่องอะไรเป็นพิเศษไหม?
+            4. ช่วงเวลา: เข้านอนและตื่นนอนเวลาเดิมทุกวันหรือไม่?
+        
+        คำแนะนำสำหรับการตอบ:
+        1. ใช้การเว้นบรรทัด (New line) ให้ชัดเจน
+        2. ใช้หัวข้อแบบจุด (Bullet points)
+        3. เน้นข้อความสำคัญด้วย **ตัวหนา**
+        4. ตอบด้วยความสุภาพและเป็นกันเอง`;
+
+        // รายชื่อโมเดลที่รองรับ (เรียงตามลำดับความเสถียรและความพร้อมใช้งาน)
+        const models = ["gemini-flash-latest", "gemini-2.0-flash", "gemini-pro-latest"];
+
+        let lastError = "";
+        for (const model of models) {
+            try {
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_API_KEY}`;
+                const resp = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: `${systemPrompt}\n\nคำถาม: ${userPrompt}` }] }]
+                    })
+                });
+
+                const data = await resp.json();
+
+                // ตรวจสอบข้อผิดพลาด 429 (Rate Limit / Quota)
+                if (resp.status === 429) {
+                    throw new Error('Quota Exceeded (429): ไม่พร้อมใช้งานชั่วคราว (ลองใหม่ในอีก 1-2 นาทีนะครับ)');
+                }
+
+                // ตรวจสอบข้อผิดพลาด API อื่นๆ
+                if (resp.status === 401 || resp.status === 403) {
+                    throw new Error('API Key invalid or suspended. Please check your API key.');
+                }
+
+                if (resp.ok && data.candidates && data.candidates[0]) {
+                    return data.candidates[0].content.parts[0].text;
+                }
+
+                lastError = data.error?.message || `HTTP ${resp.status}`;
+                console.warn(`Model ${model} failed: ${lastError}`);
+            } catch (err) {
+                lastError = err.message;
+                // ถ้าเป็นปัญหาโควตา ให้หยุดลองโมเดลอื่นทันทีเพราะโควตามักจะใช้ร่วมกัน
+                if (lastError.includes('Quota')) break;
+                console.warn(`Error with ${model}:`, err);
+            }
+        }
+        throw new Error(lastError || 'Failed to get response from API');
+    }
+
+    async function handleChat() {
+        const text = chatInput.value.trim();
         if (!text) return;
 
-        addMessage(chatInput.value.trim(), 'user');
+        // Add user message
+        addMessage(text, 'user');
         chatInput.value = '';
+        chatInput.focus();
 
-        // Simulate Bot Typing
-        setTimeout(() => {
+        const indicator = showTypingIndicator();
+
+        try {
             let response = "";
-            const langData = translations[currentLang];
 
-            // Keyword Matching
-            if (text.includes('งาน') || text.includes('work') || text.includes('office') || text.includes('job')) {
-                response = langData.advice_work;
-            } else if (text.includes('เครียด') || text.includes('stress') || text.includes('worry') || text.includes('กังวล')) {
-                response = langData.advice_stress;
-            } else if (text.includes('นอนไม่หลับ') || text.includes('can\'t sleep') || text.includes('insomnia') || text.includes('หลับไม่ลง')) {
-                response = langData.advice_insomnia;
+            // ใช้ API หาก API Key ถูกตั้งค่าถูกต้อง
+            if (isApiKeyValid && !isDemoMode) {
+                response = await getGeminiResponse(text);
             } else {
-                const currentResponses = langData.bot_responses;
-                response = currentResponses[Math.floor(Math.random() * currentResponses.length)];
+                // Demo Mode: ใช้ response ที่กำหนดไว้
+                await new Promise(r => setTimeout(r, 800));
+
+                // เลือก response แบบสุ่ม
+                const responses = translations[currentLang].bot_responses;
+                response = responses[Math.floor(Math.random() * responses.length)];
+
+                // เพิ่มป้ายชี้ว่ากำลังใช้ Demo Mode
+                if (isDemoMode) {
+                    response = `[📌 Demo Mode]\n\n${response}`;
+                }
             }
-            
+
+            indicator.remove();
             addMessage(response, 'bot');
-        }, 800);
+
+        } catch (error) {
+            console.error('Chat error:', error);
+            indicator.remove();
+
+            // ส่วนข้อความข้อผิดพลาดที่เป็นมิตรต่อผู้ใช้
+            let errorMsg = '';
+            if (error.message.includes('API Key')) {
+                errorMsg = `⚠️ **API Key Issue**\n\nDetailed error: ${error.message}\n\n💡 Solutions:\n1. Check if your API key is valid\n2. Ensure your API key has the right permissions\n3. Check if API quota is not exceeded`;
+            } else if (error.message.includes('suspended')) {
+                errorMsg = `🛑 **API Key Suspended**\n\nแอปกำลังใช้ Demo Mode โดยให้ response จำลอง\n\n💡 For full AI features:\n1. Check your Google Cloud account\n2. Verify Gemini API is enabled\n3. Ensure API credentials are valid`;
+            } else {
+                errorMsg = `❌ **Error**: ${error.message}\n\n💡 Try again in a moment or check your connection.`;
+            }
+
+            addMessage(errorMsg, 'bot');
+        }
     }
 
     if (sendBtn) {
@@ -479,10 +440,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') handleChat();
         });
     }
-
-    // History Table Population
     const historyBody = document.getElementById('history-body');
     const historyData = [
+        { date: 'Oct 24, 2023', duration: '7h 24m', score: 84, stress: '22%', status: 'Recovered' },
         { date: 'Oct 23, 2023', duration: '6h 45m', score: 72, stress: '35%', status: 'Tired' },
         { date: 'Oct 22, 2023', duration: '8h 12m', score: 91, stress: '18%', status: 'Excellent' },
         { date: 'Oct 21, 2023', duration: '7h 05m', score: 79, stress: '28%', status: 'Normal' },
@@ -490,29 +450,20 @@ document.addEventListener('DOMContentLoaded', () => {
         { date: 'Oct 19, 2023', duration: '7h 50m', score: 88, stress: '20%', status: 'Recovered' },
     ];
 
-    function renderHistory() {
-        if (!historyBody) return;
-        historyBody.innerHTML = '';
-        
-        // Add dynamic first row based on result
-        const firstRow = resultData[currentResult].history_0;
-        const allHistory = [firstRow, ...historyData];
-
-        allHistory.forEach(item => {
+    if (historyBody) {
+        historyData.forEach((item, index) => {
             const row = document.createElement('tr');
+            row.style.animation = `fadeInUp 0.6s ease-out ${index * 0.05}s both`;
             row.innerHTML = `
                 <td>${item.date}</td>
                 <td>${item.duration}</td>
-                <td><span style="font-weight:600; color:${getScoreColor(item.score)}">${item.score}</span></td>
+                <td><span style="font-weight:700; color:${getScoreColor(item.score)}">${item.score}</span></td>
                 <td>${item.stress}</td>
-                <td><span class="status-pill ${item.score < 50 ? 'bad-status' : ''}">${item.status}</span></td>
+                <td><span class="status-pill">${item.status}</span></td>
             `;
             historyBody.appendChild(row);
         });
     }
-    
-    // Initial Render
-    renderHistory();
 
     function getScoreColor(score) {
         if (score >= 85) return '#10b981'; // Green
